@@ -1,4 +1,4 @@
-FROM centos:7
+FROM centos/systemd
 
 # ###### SSH CONFIG ######
 RUN yum -y install openssh-server
@@ -9,5 +9,6 @@ RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/
     && sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
 RUN echo 'root:toor' | chpasswd
 RUN /usr/bin/ssh-keygen -A
-EXPOSE 22
-CMD ["/usr/sbin/sshd", "-D"]
+EXPOSE 22 80
+RUN systemctl enable sshd.service
+CMD ["/usr/sbin/init"]
