@@ -1,0 +1,23 @@
+FROM jenkins/ssh-agent:latest-jdk11
+USER root
+RUN sed -i 's/deb.debian.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list
+RUN sed -i 's/security.debian.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list
+RUN apt-get update && apt-get install -y apt-transport-https \
+    ca-certificates curl gnupg2
+
+# [ install docker-cli
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+RUN apt-key fingerprint 0EBFCD88
+RUN echo "deb [arch=amd64] https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/debian buster stable" >> /etc/apt/sources.list
+RUN apt-get update && apt-get install -y docker-ce-cli
+# ]
+
+# [ install nodejs 14
+WORKDIR /usr/local/lib/nodejs
+RUN wget https://repo.huaweicloud.com/nodejs/latest-v14.x/node-v14.17.5-linux-x64.tar.gz
+RUN tar -xzvf node-v14.17.5-linux-x64.tar.gz -C /usr/local/lib/nodejs
+RUN ln -sf /usr/local/lib/nodejs/node-v14.17.5-linux-x64/bin/node /usr/bin/node
+RUN ln -sf /usr/local/lib/nodejs/node-v14.17.5-linux-x64/bin/npx /usr/bin/npx
+RUN ln -sf /usr/local/lib/nodejs/node-v14.17.5-linux-x64/bin/npm /usr/bin/npm
+RUN npm config set registry https://repo.huaweicloud.com/repository/npm/
+# ]
